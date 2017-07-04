@@ -219,7 +219,7 @@ function share() {
 
   FB.ui({
     method: 'share',
-    href: 'https://data.boonmeelab.com/thaistravelthailand/' + map_id + '?p=province_flags'
+    href: 'https://data.boonmeelab.com/thaistravelthailand/' + map_id + '?p=' + province_flags
   }, function(response) {
     console.log('share dialog closes', response);
   });
