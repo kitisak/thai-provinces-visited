@@ -1,6 +1,7 @@
 <html>
 <head>
   <title>มาอวดจังหวัดที่เคยไปกัน!</title>
+  <base href="https://data.boonmeelab.com/thaistravelthailand/">
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -26,17 +27,129 @@
 	<link href="main.css" rel="stylesheet">
 </head>
 <body>
-	<div id="input">
-		<select id="provinces" class="ui fluid search dropdown" multiple="">
-			<option value="">เลือกจังหวัดที่เคยไป …</option>
-		</select>
-	</div>
-	<div id="result"></div>
+  <!-- Facebook SDK -->
+  <div id="fb-root"></div>
+  <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId            : '872807962872359',
+        autoLogAppEvents : true,
+        xfbml            : true,
+        version          : 'v2.9'
+      });
+      FB.AppEvents.logPageView();
+    };
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.9&appId=105399996218449";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+  </script>
+  <!-- Facebook SDK -->
 
+  <nav id="global" class="nav">
+    <div class="nav-left">
+      <div class="site-logo nav-item">
+        <a href="http://data.boonmeelab.com"><img src="logo_boonmeelab_small.png" /></a>
+      </div>
+      <div class="menu-item nav-item">
+        <a href="http://www.boonmeelab.com" target="_blank">Work</a>
+      </div>
+      <div class="menu-item nav-item">
+        <a href="http://data.boonmeelab.com" target="_blank">Data</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="menu-item nav-item">
+        <a href="https://www.facebook.com/BoonmeeLab" target="_blank">
+          <i class="icon icon-facebook-squared"></i>
+        </a>
+        <a href="https://www.instagram.com/boonmeelab/" target="_blank">
+          <i class="icon icon-instagram"></i>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div id="map-columns" class="columns">
+      <div class="column is-6-desktop">
+
+        <div id="play-content">
+          <h2>เคยไปจังหวัดไหนมาบ้าง?</h2>
+          <p>คุณเคยแวะไปจังหวัดไหนบ้าง ขอแบบที่เคยแวะไปเที่ยว ไปค้างคืน หรือไปอยู่ แต่ขับรถผ่านนี่ไม่เข้าพวกนะ</p>
+          <div id="input">
+            <select id="provinces" class="ui fluid search dropdown" multiple="">
+              <option value="">เลือกจังหวัดที่เคยไป …</option>
+            </select>
+          </div>
+
+          <div class="spacing"></div>
+          <button class="button" onclick="share();">แชร์แผนที่ของคุณบน Facebook</button>
+        </div>
+
+        <!--
+        <div id="result-content">
+          <h2>เคยไปมาแล้ว 21 จังหวัด</h2>
+          <p>โดยเฉลี่ย 12 จังหวัด จากทั้งหมด 1200 คน</p>
+
+          <div class="spacing"></div>
+          <a href="/" class="button">สร้างแผนที่ของคุณเอง</a>
+
+          <div class="spacing"></div>
+          <div class="spacing"></div>
+          <div class="fb-page" data-href="https://www.facebook.com/BoonmeeLab" data-height="300" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
+            <blockquote cite="https://www.facebook.com/BoonmeeLab" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/BoonmeeLab">Boonmee Lab</a></blockquote>
+          </div>
+        </div>
+        -->
+
+        <div class="is-hidden-mobile">
+          <div class="spacing"></div>
+          <div class="spacing"></div>
+          <h6>สนับสนุนโดย</h6>
+          <div class="banner">
+            <a href="https://www.bluebasket.market/mibochestnut/product" target="_blank">
+              <img src="https://www.bluebasket.market/api/image/595b1d14e875e61aa9afe52f" />
+            </a>
+          </div>
+          <div class="banner">
+            <a href="https://www.bluebasket.market/nanafruit/product" target="_blank">
+              <img src="https://www.bluebasket.market/api/image/595b1d30e875e61aa9afe530" />
+            </a>
+          </div>
+        </div>
+
+      </div>
+      <div class="column is-6-desktop">
+	      <div id="result"></div>
+      </div>
+    </div>
+  </div>
 	<div id="credit">
 		สร้างสรรค์โดย
     <div class="logo boonmeelab"><a href="https://www.facebook.com/BoonmeeLab/"><span></span></a></div>
   </div>
+
+  <div class="container is-hidden-desktop">
+    <div class="spacing"></div>
+    <h6>สนับสนุนโดย</h6>
+    <div class="banner is-fullwidth">
+      <a href="https://www.bluebasket.market/mibochestnut/product" target="_blank">
+        <img src="https://www.bluebasket.market/api/image/595b1d14e875e61aa9afe52f" />
+      </a>
+    </div>
+    <div class="banner is-fullwidth">
+      <a href="https://www.bluebasket.market/nanafruit/product" target="_blank">
+        <img src="https://www.bluebasket.market/api/image/595b1d30e875e61aa9afe530" />
+      </a>
+    </div>
+  </div>
+
+  <canvas id="canvas" width="320px" height="640px"></canvas>
+
 
 	<!--  Adapted from https://gist.github.com/michellechandra/0b2ce4923dc9b5809922 -->
 	<script src="http://d3js.org/d3.v4.min.js"></script>
@@ -45,6 +158,15 @@
 	  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
 	  crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.js"></script>
+  <script type="text/javascript" src="http://canvg.github.io/canvg/rgbcolor.js"></script>
+  <script type="text/javascript" src="http://canvg.github.io/canvg/StackBlur.js"></script>
+  <script type="text/javascript" src="http://canvg.github.io/canvg/canvg.js"></script>
+  <script>
+    var visited_provinces = [];
+    for (var i = 0; i < 77; i++) {
+      visited_provinces.push(Math.random() * 10 >= 9 ? '1' : '0');
+    }
+  </script>
 	<script src="main.js"></script>
 </body>
 </html>
