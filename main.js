@@ -1,13 +1,13 @@
 //Width and height of map
-var width = 400;
-var height = 700;
+var width = 320;
+var height = 640;
 
 // D3 Projection
 var projection = d3.geoAlbers()
   .center([100.0, 13.5])
   .rotate([0, 24])
   .parallels([5, 21])
-  .scale(1200 * 2)
+  .scale(1000 * 2)
   .translate([-100, 200]);
 
 // Define path generator
@@ -19,13 +19,23 @@ var color = d3.scaleLinear()
   .domain([0, 1])
   .range(["gainsboro", "#eb307c"]);
 
+//Create SVG element and append map to the SVG
+var svg = d3.select("#result")
+  .append("svg")
+  .attr("id", "map")
+  .attr("class", "map")
+  .attr("width", width)
+  .attr("height", height);
+
 var legendText = ["เคยไป", "ไม่เคยไป"];
 
 // Modified Legend Code from Mike Bostock: http://bl.ocks.org/mbostock/3888852
-var legend = d3.select("#result").append("svg")
+var legend = svg.append("g")
+    .attr("id", "legend")
     .attr("class", "legend")
     .attr("width", 140)
     .attr("height", 100)
+    .attr("transform", "translate(200,480)")
     .selectAll("g")
   .data(color.domain().slice().reverse())
     .enter()
@@ -42,12 +52,6 @@ var legend = d3.select("#result").append("svg")
             .attr("dy", ".35em")
             .text(function(d) { return d; });
 
-//Create SVG element and append map to the SVG
-var svg = d3.select("#result")
-  .append("svg")
-  .attr("class", "map")
-  .attr("width", width)
-  .attr("height", height);
 
 // Append Div for tooltip to SVG
 var tooltip = d3.select("body")
@@ -86,9 +90,20 @@ var findProvinceTH = function(province) {
   }
 }
 
+// TODO: Load pre-selected province from querystring or DB
+var visited_provinces;
+if (typeof visited_provinces === 'undefined') {
+  visited_provinces = [];
+  for (var i = 0; i < 77; i++) {
+    visited_provinces.push(Math.random() * 10 >= 9 ? '1' : '0');
+  }
+}
+
 d3.csv("data/provinces-visited.csv", function(data) {
-// d3.csv("data/place-province.csv", function(places) {
   provinces = data;
+  provinces.forEach(function(d, i) {
+    d.visited = visited_provinces[i] === '1';
+  });
 
   // dropdown
   var $provinces = $("#provinces");
@@ -104,7 +119,7 @@ d3.csv("data/provinces-visited.csv", function(data) {
   //     text: row.place
   //   }));
   // });
-  $('.ui.dropdown')
+  $provinces
     .dropdown({
       onAdd: function(value, text, $selectedItem) {
         updateGeo(value, 1);
@@ -157,6 +172,55 @@ d3.csv("data/provinces-visited.csv", function(data) {
             updateMap();
           });
     updateMap();
+
+    // Add visited provinces to search dropdown too!
+    var selected_names = provinces
+      .filter(function(d) {
+        return d.visited;
+      })
+      .map(function(d) {
+        return d.province;
+      });
+
+    $provinces
+      .dropdown("set selected", selected_names);
   });
 // })
 });
+
+
+// Convert SVG to PNG
+function share() {
+  // var canvas = document.getElementById('canvas');
+  // var map = document.getElementById('map');
+  // canvg('canvas', map.outerHTML)
+
+  // var dataURL = canvas.toDataURL("image/png");
+  // location.href = dataURL;
+
+  // 1) call API to create map
+  // 2) get map ID and create share dialog
+  var map_id = '12345';
+  var total_provinces = 12;
+  var province_flags = provinces.map(function(d) {
+    return d.visited ? '1' : '0';
+  }).join('');
+
+  // logging
+  FB.AppEvents.logEvent("Create Travel Map");
+  // number of visited provinces
+  var params = {};
+  params[FB.AppEvents.ParameterNames.LEVEL] = String(total_provinces);
+  FB.AppEvents.logEvent(
+    FB.AppEvents.EventNames.ACHIEVED_LEVEL,
+    null,
+    params
+  );
+
+  FB.ui({
+    method: 'share',
+    href: 'https://data.boonmeelab.com/thaistravelthailand/' + map_id + '?p=province_flags'
+  }, function(response) {
+    console.log('share dialog closes', response);
+  });
+}
