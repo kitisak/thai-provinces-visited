@@ -76,7 +76,7 @@ var s3_resource_url = 'https://s3-' + process.env.AWS_REGION
 function notfound(res) {
   res.setHeader('content-type', 'text/html; charset=utf-8');
   res.writeHead(404);
-  res.end('หาอะไรอยู่?');
+  res.end('หาอะไรอยู่?<br><a href="' + site_url + '">กลับหน้าแรกดีกว่า</a>');
 }
 
 var mongoClient = MongoClient.connect(url, function(err, db) {
