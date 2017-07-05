@@ -77,7 +77,7 @@
     <div id="map-columns" class="columns">
       <div class="column is-6-desktop">
 
-        <div id="play-content">
+        <div id="play-content" style="{{ page === 'play' ? '' : 'display: none;' }}">
           <h2>เคยไปจังหวัดไหนมาบ้าง?</h2>
           <p>คุณเคยแวะไปจังหวัดไหนบ้าง ขอแบบที่เคยแวะไปเที่ยว ไปค้างคืน หรือไปอยู่ แต่ขับรถผ่านนี่ไม่เข้าพวกนะ</p>
           <div id="input">
@@ -87,16 +87,18 @@
           </div>
 
           <div class="spacing"></div>
-          <button class="button" onclick="share();">แชร์แผนที่ของคุณบน Facebook</button>
+          <button id="share-btn" class="button" disabled onclick="share(); return false;">แชร์แผนที่ของคุณบน Facebook</button>
         </div>
 
-        <!--
-        <div id="result-content">
-          <h2>เคยไปมาแล้ว 21 จังหวัด</h2>
-          <p>โดยเฉลี่ย 12 จังหวัด จากทั้งหมด 1200 คน</p>
+        <div id="result-content" style="{{ page === 'result' ? '' : 'display: none;' }}">
+          <h2>เคยไปมาแล้ว {{ province.length }} จังหวัด</h2>
+          <p>ได้แก่</p>
+          <ul id="visited-province-list" class="two-column"></ul>
+
+          <p>โดยเฉลี่ยคนไปมาแล้ว {{ avg_province }} จังหวัด จากข้อมูลทั้งหมด {{ people_count }} คน</p>
 
           <div class="spacing"></div>
-          <a href="/" class="button">สร้างแผนที่ของคุณเอง</a>
+          <a href="" class="button">สร้างแผนที่ของคุณเอง</a>
 
           <div class="spacing"></div>
           <div class="spacing"></div>
@@ -104,7 +106,6 @@
             <blockquote cite="https://www.facebook.com/BoonmeeLab" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/BoonmeeLab">Boonmee Lab</a></blockquote>
           </div>
         </div>
-        -->
 
         <div class="is-hidden-mobile">
           <div class="spacing"></div>
@@ -148,8 +149,7 @@
     </div>
   </div>
 
-  <canvas id="canvas" width="320px" height="640px"></canvas>
-
+  <!--<canvas id="canvas" width="320px" height="640px"></canvas>-->
 
 	<!--  Adapted from https://gist.github.com/michellechandra/0b2ce4923dc9b5809922 -->
 	<script src="https://d3js.org/d3.v4.min.js"></script>
@@ -161,10 +161,13 @@
   <script type="text/javascript" src="https://canvg.github.io/canvg/rgbcolor.js"></script>
   <script type="text/javascript" src="https://canvg.github.io/canvg/StackBlur.js"></script>
   <script type="text/javascript" src="https://canvg.github.io/canvg/canvg.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
   <script>
+    var site_url = {{ JSON.stringify(site_url || '') }};
+    var visited_province_ids = {{ JSON.stringify(province || []) }};
     var visited_provinces = [];
     for (var i = 0; i < 77; i++) {
-      visited_provinces.push(Math.random() * 10 >= 9 ? '1' : '0');
+      visited_provinces.push(visited_province_ids.indexOf(i + 1) >= 0 ? '1' : '0');
     }
   </script>
 	<script src="main.js"></script>

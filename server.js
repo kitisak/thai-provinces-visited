@@ -12,8 +12,27 @@ var port = process.env.PORT || '8080';
 var url = process.env.MONGODB || 'mongodb://localhost:27017/thaipv';
 var site_url = process.env.SITE_URL || `http://localhost:${port}`;
 
+var fs = require('fs');
+_.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
+var template = {
+  play: _.template(fs.readFileSync('./index.html', 'utf8'))
+};
+var base_template_data = {
+  site_url: site_url,
+  page: '',
+  map_id: '',
+  province: [],
+  avg_province: 0,
+  people_count: 99999,
+};
+
 var mongoClient = MongoClient.connect(url, function(err, db) {
   var server = http.createServer(function(req, res) {
+    var req_path = url_re.parse(req.url).pathname;
+    var route = {
+      view: /^\/view\/([0-9a-f]+)\/?$/gi,
+    };
+    var route_view_match = route.view.exec(req_path);
     function insertDB(data, done) {
       assert.equal(typeof data, 'object');
       assert.ok(Array.isArray(data.province));
@@ -37,7 +56,79 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
       });
     }
 
+    function getStatById(id, done) {
+      function getObjectById(id, callback) {
+        db.collection("thaipv", function(err, collection) {
+          collection.find(id).toArray(callback);
+        });
+      }
+
+      function getPeopleCount(callback) {
+        db.collection("thaipv",  function(err, collection) {
+          collection.count(callback);
+        });
+      }
+
+      function getSumProvince(callback) {
+        db.collection("thaipv",  function(err, collection) {
+          collection.aggregate([
+            {
+              "$project": {
+                "province": 1,
+                "sumProvince": { "$size": "$province" }
+              }
+            },
+            {
+              "$group": {
+                "_id": null,
+                "sum_province": { "$sum": "$sumProvince" }
+              }
+            }
+          ], callback);
+        });
+      }
+
+      var json_result;
+      if (!ObjectId.isValid(id)) {
+        done(new Error('พิมพ์ผิดมั้ง'));
+        return;
+      }
+      var query = { _id: new ObjectId(id) };
+      async.parallel({
+        objectById: async.apply(getObjectById, query),
+        peopleCount: getPeopleCount,
+        sumProvince: getSumProvince
+      }, function (error, results) {
+        if (error) {
+          done(error);
+          return;
+        }
+        let json = {
+          id: _.get(results, 'objectById.0._id'),
+          province: _.get(results, 'objectById.0.province'),
+          people_count: _.get(results, 'peopleCount'),
+          avg_province: Math.round(_.get(results, 'sumProvince.0.sum_province')/_.get(results, 'peopleCount'))
+        };
+        done(null, json);
+        // return
+        // {
+        //     "_id": "595bc2e01107fc0b91194404",
+        //     "province": [
+        //         "Bangkok",
+        //         "Ratchaburi",
+        //         "Pattaya",
+        //         "Hua Hin",
+        //         "Chang Mai"
+        //     ],
+        //     "people_count": 23,
+        //     "avg_province": 5
+        // }
+      });
+    }
+
+
     if (req.method === 'POST' && req.url === '/api/play') {
+      // @path POST /api/play
       // Store map data
       // @params {array} body.province Province ID
       // @params {string} body.user_input_at Date time string when user begin using application
@@ -64,91 +155,67 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
         // return
         // {"_id":"595bc2b50ff4f40b6c58428c"}
       });
-    } else if (req.method === 'GET' && url_re.parse(req.url).pathname === '/api/play') {
+    } else if (req.method === 'GET' && req_path === '/api/play') {
+      // @path GET /api/play
       // Get play stats by ID
       // @params {string} id
       // @return {object} play stats
       var queryy = url_re.parse(req.url, true).query;
       req.on('data', function(chunk) {
-        queryy
+        // no-op
       });
       req.on('end', function() {
-        var query = { _id: new ObjectId(queryy.id) };
-        var json_result;
-
-        function getObjectById(id, callback) {
-          db.collection("thaipv", function(err, collection) {
-            collection.find(id).toArray(callback);
-          });
-        }
-
-        function getPeopleCount(callback) {
-          db.collection("thaipv",  function(err, collection) {
-            collection.count(callback);
-          });
-        }
-
-        function getSumProvince(callback) {
-          db.collection("thaipv",  function(err, collection) {
-            collection.aggregate([
-              {
-                "$project": {
-                  "province": 1,
-                  "sumProvince": { "$size": "$province" }
-                }
-              },
-              {
-                "$group": {
-                  "_id": null,
-                  "sum_province": { "$sum": "$sumProvince" }
-                }
-              }
-            ], callback);
-          });
-        }
-
-        async.parallel({
-          objectById: async.apply(getObjectById, query),
-          peopleCount: getPeopleCount,
-          sumProvince: getSumProvince
-        }, function (error, results) {
-          if (error) {
+        getStatById(queryy.id, function(err, result) {
+          if (err) {
             res.writeHead(500);
-            res.end();
+            res.end(err.toString());
             return;
           }
-          let json = {
-            id: _.get(results, 'objectById.0._id'),
-            province: results.objectById[0].province,
-            people_count: results.peopleCount,
-            avg_province: Math.round(results.sumProvince[0].sum_province/results.peopleCount)
-          };
-          if (err) throw err;
           res.setHeader('content-type', 'application/json');
           res.writeHead(200);
-          res.end(JSON.stringify(json));
-          // return
-          // {
-          //     "_id": "595bc2e01107fc0b91194404",
-          //     "province": [
-          //         "Bangkok",
-          //         "Ratchaburi",
-          //         "Pattaya",
-          //         "Hua Hin",
-          //         "Chang Mai"
-          //     ],
-          //     "people_count": 23,
-          //     "avg_province": 5
-          // }
+          res.end(JSON.stringify(result));
         });
       });
 
+    } else if (req.method === 'GET' && req_path === '/') {
+      // @path GET /
+      var data = _.merge(base_template_data, { page: 'play' })
+      res.writeHead(200);
+      res.end(template.play(data));
+
+    } else if (req.method === 'GET' && route_view_match) {
+      // @path GET /view/:id
+      var id = route_view_match[1];
+      try {
+        getStatById(id, function(err, result) {
+          if (err) {
+            res.writeHead(500);
+            res.end(err.toString());
+            return;
+          }
+          var data = _.merge(base_template_data, result, {
+            page: 'result',
+            map_id: id
+          })
+          res.writeHead(200);
+          res.end(template.play(data));
+        });
+      } catch(err) {
+        res.writeHead(500);
+        res.end(err.toString());
+      }
+
     } else {
       res.writeHead(404);
-      res.end();
+      res.end('หาอะไรอยู่?');
     }
   });
   server.on("error", err => console.error(err));
   server.listen(port);
   console.log('server: ' + site_url);
+});
+
+process.on('uncaughtException', err => {
+  console.error(err, 'Uncaught Exception thrown');
+  process.exit(1);
 });

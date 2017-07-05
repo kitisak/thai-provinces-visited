@@ -61,6 +61,12 @@ var tooltip = d3.select("body")
 
 var geo;
 var updateGeo = function(province, visited) {
+  for (var i = 0; i < provinces.length; i++) {
+    if (provinces[i].province === province) {
+      provinces[i].visited = visited;
+      break;
+    }
+  }
   for (var i = 0; i < geo.features.length; i++)  {
     if (province === geo.features[i].properties.NAME_1) {
       if (typeof visited != "undefined") {
@@ -78,6 +84,12 @@ var updateMap = function() {
       var value = d.properties.visited;
       return value ? color(value) : "gainsboro";
     });
+
+  var count = 0;
+  provinces.forEach(function(d) {
+    if (d.visited) count++;
+  });
+  document.getElementById('share-btn').disabled = count === 0;
 }
 
 var provinces;
@@ -94,16 +106,18 @@ var findProvinceTH = function(province) {
 var visited_provinces;
 if (typeof visited_provinces === 'undefined') {
   visited_provinces = [];
-  for (var i = 0; i < 77; i++) {
-    visited_provinces.push(Math.random() * 10 >= 9 ? '1' : '0');
-  }
 }
 
 d3.csv("data/provinces-visited.csv", function(data) {
+  var visited_html = '';
   provinces = data;
   provinces.forEach(function(d, i) {
     d.visited = visited_provinces[i] === '1';
+    if (d.visited) {
+      visited_html += '<li>' + d.provinceTH + '</li>';
+    }
   });
+  document.getElementById('visited-province-list').innerHTML = visited_html;
 
   // dropdown
   var $provinces = $("#provinces");
@@ -189,38 +203,50 @@ d3.csv("data/provinces-visited.csv", function(data) {
 });
 
 
+function getVisitedProvince() {
+  return provinces
+    .filter(function(d) {  return d.visited; })
+    .map(function(d) { return d.id; });
+}
+
 // Convert SVG to PNG
 function share() {
-  // var canvas = document.getElementById('canvas');
-  // var map = document.getElementById('map');
-  // canvg('canvas', map.outerHTML)
+  var visits = getVisitedProvince();
 
-  // var dataURL = canvas.toDataURL("image/png");
-  // location.href = dataURL;
+  fetch(site_url + '/api/play', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      province: visits,
+      user_input_at: Date.now()
+    })
+  })
+  .then(function(response) {
+    return response.json()
+  })
+  .then(function(json) {
+    var map_id = json.id;
+    // logging
+    FB.AppEvents.logEvent("Create Travel Map");
+    // number of visited provinces
+    var params = {};
+    params[FB.AppEvents.ParameterNames.LEVEL] = String(visits.length);
+    FB.AppEvents.logEvent(
+      FB.AppEvents.EventNames.ACHIEVED_LEVEL,
+      null,
+      params
+    );
 
-  // 1) call API to create map
-  // 2) get map ID and create share dialog
-  var map_id = '12345';
-  var total_provinces = 12;
-  var province_flags = provinces.map(function(d) {
-    return d.visited ? '1' : '0';
-  }).join('');
-
-  // logging
-  FB.AppEvents.logEvent("Create Travel Map");
-  // number of visited provinces
-  var params = {};
-  params[FB.AppEvents.ParameterNames.LEVEL] = String(total_provinces);
-  FB.AppEvents.logEvent(
-    FB.AppEvents.EventNames.ACHIEVED_LEVEL,
-    null,
-    params
-  );
-
-  FB.ui({
-    method: 'share',
-    href: 'https://data.boonmeelab.com/thaistravelthailand/' + map_id + '?p=' + province_flags
-  }, function(response) {
-    console.log('share dialog closes', response);
+    FB.ui({
+      method: 'share',
+      href: site_url + '/view/' + map_id
+    }, function(response) {
+      // no-op
+    });
+  })
+  .catch(function(err) {
+    console.error('parsing failed', err);
   });
 }
