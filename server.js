@@ -6,6 +6,7 @@ var http = require('http');
 var qs = require('querystring');
 var url_re = require('url');
 var async = require('async');
+var csv_parse = require('csv-parse');
 var _ = require('lodash');
 var moment = require('moment');
 var serveStatic = require('serve-static')
@@ -35,9 +36,24 @@ var base_template_data = {
   page: '',
   map_id: '',
   province: [],
+  province_name: [],
   avg_province: 0,
   people_count: 99999,
 };
+
+var province_list = [];
+var province_file = __dirname + '/public/data/provinces-visited.csv';
+var csv_parser = csv_parse({
+  delimiter: ',',
+  columns: true
+}, function (err, data) {
+  if (err) {
+    console.error('parse csv failed:', err);
+    return;
+  }
+  province_list = data;
+});
+fs.createReadStream(province_file).pipe(csv_parser);
 
 function notfound(res) {
   res.writeHead(404);
@@ -212,8 +228,6 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
       var data = _.merge({}, base_template_data, {
         current_url,
         thumbnail_url,
-        title,
-        description,
         page: 'play'
       })
       res.setHeader('content-type', 'text/html');
@@ -230,11 +244,15 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
             res.end(err.toString());
             return;
           }
+          var province_names = _.compact(result.province.map(function(id) {
+            return _.get(_.find(province_list, ['id', String(id)]), 'provinceTH');
+          }));
+          title = 'เคยไปมาแล้ว ' + province_names.length + ' จังหวัด ได้แก่ ' + province_names.join(', ');
           var data = _.merge({}, base_template_data, result, {
             current_url,
             thumbnail_url,
             title,
-            description,
+            description: title,
             page: 'result',
             map_id: id
           })
