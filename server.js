@@ -74,6 +74,7 @@ var s3_resource_url = 'https://s3-' + process.env.AWS_REGION
   + '.amazonaws.com/' + process.env.AWS_BUCKET + '/';
 
 function notfound(res) {
+  res.setHeader('content-type', 'text/html; charset=utf-8');
   res.writeHead(404);
   res.end('หาอะไรอยู่?');
 }
@@ -263,7 +264,7 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
             res.end(err.toString());
             return;
           }
-          res.setHeader('content-type', 'application/json');
+          res.setHeader('content-type', 'application/json; charset=utf-8');
           res.writeHead(200);
           res.end(JSON.stringify(result));
         });
@@ -276,7 +277,7 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
         thumbnail_url,
         page: 'play'
       })
-      res.setHeader('content-type', 'text/html');
+      res.setHeader('content-type', 'text/html; charset=utf-8');
       res.writeHead(200);
       res.end(template.play(data));
 
@@ -302,7 +303,7 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
             page: 'result',
             map_id: id
           })
-          res.setHeader('content-type', 'text/html');
+          res.setHeader('content-type', 'text/html; charset=utf-8');
           res.writeHead(200);
           res.end(template.play(data));
         });
