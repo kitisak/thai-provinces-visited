@@ -82,14 +82,10 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
       assert.equal(typeof data, 'object');
       assert.ok(Array.isArray(data.province));
       assert.notEqual(data.province.length, 0);
-      data = _.pick(data, ['ip', 'province', 'user_input_at']);
+      assert.equal(typeof data.t, 'number');
+      data = _.pick(data, ['ip', 'province', 't']);
       // convert to number and sort ascendingly
       data.province = _.uniq(data.province).map(id => Number(id)).sort((a, b) => b < a);
-      if (data.user_input_at) {
-        data.user_input_at = moment(data.user_input_at).toDate();
-      } else {
-        data.user_input_at = new Date();
-      }
       data.created_at = new Date();
       db.collection('thaipv').insertOne(data, function(err, result) {
         assert.equal(err, null);
@@ -212,7 +208,8 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
       // @path POST /api/play
       // Store map data
       // @params {array} body.province Province ID
-      // @params {string} body.user_input_at Date time string when user begin using application
+      // @params {number} body.t Time user takes to submit form in ms.
+      // @params {string} body.image Base64 encoded image
       // @return {object} play stats
       var body = '';
       req.on('data', function(chunk) {

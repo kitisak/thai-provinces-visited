@@ -227,7 +227,7 @@ function share() {
     body: JSON.stringify({
       image: data64,
       province: visits,
-      user_input_at: user_input_at
+      t: Date.now() - user_input_at
     })
   })
   .then(function(response) {
