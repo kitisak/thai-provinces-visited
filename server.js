@@ -282,9 +282,8 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
       var id = route_view_match[1];
       try {
         getStatById(id, function(err, result) {
-          if (err || !result) {
-            res.writeHead(500);
-            res.end(err.toString());
+          if (err || !result || !result.id) {
+            notfound(res);
             return;
           }
           var province_names = _.compact(result.province.map(function(id) {
