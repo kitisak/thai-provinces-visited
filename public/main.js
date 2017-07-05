@@ -113,7 +113,7 @@ d3.csv("public/data/provinces-visited.csv", function(data) {
   var visited_html = '';
   provinces = data;
   provinces.forEach(function(d, i) {
-    d.visited = visited_provinces[i] === '1';
+    d.visited = visited_provinces[d.id - 1] === '1';
     if (d.visited) {
       visited_html += '<li>' + d.provinceTH + '</li>';
     }
