@@ -13,9 +13,7 @@ module.exports = {
       ignore_watch: [
         '[\\/\\\\]\\./',
         '.git',
-        'node_modules',
-        'public',
-        'data',
+        'node_modules'
       ],
       min_uptime: 10000,
       max_restarts: 2,

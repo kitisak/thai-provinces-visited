@@ -8,14 +8,23 @@ var url_re = require('url');
 var async = require('async');
 var _ = require('lodash');
 var moment = require('moment');
+var serveStatic = require('serve-static')
 var port = process.env.PORT || '8080';
 var url = process.env.MONGODB || 'mongodb://localhost:27017/thaipv';
 var site_url = process.env.SITE_URL || `http://localhost:${port}`;
 
+// Serve up public folder
+function setHeaders (res, path) {
+  res.setHeader('x-vendor', 'Boonmee Lab');
+}
+var servePublicStatic = serveStatic(__dirname + '/public', {
+  'setHeaders': setHeaders
+});
+
 var fs = require('fs');
 _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
 var template = {
-  play: _.template(fs.readFileSync('./index.html', 'utf8'))
+  play: _.template(fs.readFileSync('./public/index.html', 'utf8'))
 };
 var base_template_data = {
   site_url: site_url,
@@ -26,13 +35,13 @@ var base_template_data = {
   people_count: 99999,
 };
 
+function notfound(res) {
+  res.writeHead(404);
+  res.end('หาอะไรอยู่?');
+}
+
 var mongoClient = MongoClient.connect(url, function(err, db) {
   var server = http.createServer(function(req, res) {
-    var req_path = url_re.parse(req.url).pathname;
-    var route = {
-      view: /^\/view\/([0-9a-f]+)\/?$/gi,
-    };
-    var route_view_match = route.view.exec(req_path);
     function insertDB(data, done) {
       assert.equal(typeof data, 'object');
       assert.ok(Array.isArray(data.province));
@@ -126,8 +135,21 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
       });
     }
 
+    var req_path = url_re.parse(req.url).pathname;
+    var route = {
+      public: /^\/public(\/.+)$/gi,
+      view: /^\/view\/([0-9a-f]+)\/?$/gi,
+    };
+    var route_public_match = route.public.exec(req_path);
+    var route_view_match = route.view.exec(req_path);
 
-    if (req.method === 'POST' && req.url === '/api/play') {
+    if (req.method === 'GET' && route_public_match) {
+      // req.path =
+      req.url = route_public_match[1];
+      servePublicStatic(req, res, function() {
+        notfound(res);
+      });
+    } else if (req.method === 'POST' && req.url === '/api/play') {
       // @path POST /api/play
       // Store map data
       // @params {array} body.province Province ID
@@ -179,7 +201,7 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
 
     } else if (req.method === 'GET' && req_path === '/') {
       // @path GET /
-      var data = _.merge(base_template_data, { page: 'play' })
+      var data = _.merge({}, base_template_data, { page: 'play' })
       res.writeHead(200);
       res.end(template.play(data));
 
@@ -193,7 +215,7 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
             res.end(err.toString());
             return;
           }
-          var data = _.merge(base_template_data, result, {
+          var data = _.merge({}, base_template_data, result, {
             page: 'result',
             map_id: id
           })
@@ -206,8 +228,7 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
       }
 
     } else {
-      res.writeHead(404);
-      res.end('หาอะไรอยู่?');
+      notfound(res);
     }
   });
   server.on("error", err => console.error(err));

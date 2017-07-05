@@ -108,7 +108,7 @@ if (typeof visited_provinces === 'undefined') {
   visited_provinces = [];
 }
 
-d3.csv("data/provinces-visited.csv", function(data) {
+d3.csv("public/data/provinces-visited.csv", function(data) {
   var visited_html = '';
   provinces = data;
   provinces.forEach(function(d, i) {
@@ -135,6 +135,7 @@ d3.csv("data/provinces-visited.csv", function(data) {
   // });
   $provinces
     .dropdown({
+      action: interactive ? 'activate' : 'nothing',
       onAdd: function(value, text, $selectedItem) {
         updateGeo(value, 1);
         updateMap();
@@ -146,7 +147,7 @@ d3.csv("data/provinces-visited.csv", function(data) {
     });
 
   // Load GeoJSON data and merge with states data
-  d3.json("data/thailand-new.json", function(json) {
+  d3.json("public/data/thailand-new.json", function(json) {
     geo = json;
 
     // Loop through each province in the .csv file
@@ -176,6 +177,7 @@ d3.csv("data/provinces-visited.csv", function(data) {
               .style("opacity", 0);
           })
         .on("click", function(d) {
+            if (!interactive) return;
             if (updateGeo(d.properties.NAME_1) == 0) {
               $("#provinces").dropdown("set selected", d.properties.NAME_1);
               updateGeo(d.properties.NAME_1, 1);
@@ -245,6 +247,10 @@ function share() {
     }, function(response) {
       // no-op
     });
+
+    setTimeout(function() {
+      location.href = site_url + '/view/' + map_id;
+    }, 2000);
   })
   .catch(function(err) {
     console.error('parsing failed', err);

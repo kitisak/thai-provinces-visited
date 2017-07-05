@@ -1,9 +1,9 @@
 <html>
 <head>
   <title>มาอวดจังหวัดที่เคยไปกัน!</title>
-  <base href="https://data.boonmeelab.com/thaistravelthailand/">
+  <base href="{{ site_url }}">
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="widtd=device-widtd,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
 
   <!-- for Google -->
   <meta name="description" content="พิมพ์ชื่อจังหวัดที่เคยไป แล้วแสดงเป็นแผนที่ไปอวดเพื่อนได้เลย! เมืองไทยมีที่เที่ยวมากมาย น้ำตก ทะเล ภูเขา เที่ยวไทย ไม่ไปไม่รู้" />
@@ -13,18 +13,18 @@
   <!-- for Facebook -->
   <meta property="og:title" content="มาอวดจังหวัดที่เคยไปกัน!" />
   <meta property="og:type" content="article" />
-  <meta property="og:image" content="http://puripant.ruchikachorn.com/thai-provinces-visited/thumbnail.jpg" />
-  <meta property="og:url" content="http://puripant.ruchikachorn.com/thai-provinces-visited/" />
+  <meta property="og:image" content="{{ site_url }}/public/thumbnail.jpg" />
+  <meta property="og:url" content="{{ site_url }}" />
   <meta property="og:description" content="พิมพ์ชื่อจังหวัดที่เคยไป แล้วแสดงเป็นแผนที่ไปอวดเพื่อนได้เลย! เมืองไทยมีที่เที่ยวมากมาย น้ำตก ทะเล ภูเขา เที่ยวไทย ไม่ไปไม่รู้" />
 
   <!-- for Twitter -->
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="มาอวดจังหวัดที่เคยไปกัน!" />
   <meta name="twitter:description" content="พิมพ์ชื่อจังหวัดที่เคยไป แล้วแสดงเป็นแผนที่ไปอวดเพื่อนได้เลย! เมืองไทยมีที่เที่ยวมากมาย น้ำตก ทะเล ภูเขา เที่ยวไทย ไม่ไปไม่รู้" />
-  <meta name="twitter:image" content="http://puripant.ruchikachorn.com/thai-provinces-visited/thumbnail.jpg" />
+  <meta name="twitter:image" content="{{ site_url }}/public/thumbnail.jpg" />
 
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.css">
-	<link href="main.css" rel="stylesheet">
+	<link href="public/main.css" rel="stylesheet">
 </head>
 <body>
   <!-- Facebook SDK -->
@@ -52,7 +52,7 @@
   <nav id="global" class="nav">
     <div class="nav-left">
       <div class="site-logo nav-item">
-        <a href="https://data.boonmeelab.com"><img src="logo_boonmeelab_small.png" /></a>
+        <a href="https://data.boonmeelab.com"><img src="public/logo_boonmeelab_small.png" /></a>
       </div>
       <div class="menu-item nav-item">
         <a href="https://www.boonmeelab.com" target="_blank">Work</a>
@@ -75,7 +75,7 @@
 
   <div class="container">
     <div id="map-columns" class="columns">
-      <div class="column is-6-desktop">
+      <div class="column padding is-6-desktop">
 
         <div id="play-content" style="{{ page === 'play' ? '' : 'display: none;' }}">
           <h2>เคยไปจังหวัดไหนมาบ้าง?</h2>
@@ -96,6 +96,12 @@
           <ul id="visited-province-list" class="two-column"></ul>
 
           <p>โดยเฉลี่ยคนไปมาแล้ว {{ avg_province }} จังหวัด จากข้อมูลทั้งหมด {{ people_count }} คน</p>
+
+          <div class="spacing"></div>
+          <div>Copy Link:</div>
+          <div class="url-box">
+            <div>{{ site_url }}/view/{{ map_id }}</div>
+          </div>
 
           <div class="spacing"></div>
           <a href="" class="button">สร้างแผนที่ของคุณเอง</a>
@@ -134,7 +140,7 @@
     <div class="logo boonmeelab"><a href="https://www.facebook.com/BoonmeeLab/"><span></span></a></div>
   </div>
 
-  <div class="container is-hidden-desktop">
+  <div class="container padding is-hidden-desktop">
     <div class="spacing"></div>
     <h6>สนับสนุนโดย</h6>
     <div class="banner is-fullwidth">
@@ -164,12 +170,13 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
   <script>
     var site_url = {{ JSON.stringify(site_url || '') }};
+    var interactive = {{ page === 'play' }};
     var visited_province_ids = {{ JSON.stringify(province || []) }};
     var visited_provinces = [];
     for (var i = 0; i < 77; i++) {
       visited_provinces.push(visited_province_ids.indexOf(i + 1) >= 0 ? '1' : '0');
     }
   </script>
-	<script src="main.js"></script>
+	<script src="public/main.js"></script>
 </body>
 </html>

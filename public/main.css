@@ -432,7 +432,14 @@ h6 {
 
 
 .container {
-  padding: 20px;
+  padding: 20px 0;
+}
+
+@media screen and (min-width: 769px) {
+  .container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 }
 
 .columns {
@@ -504,4 +511,22 @@ h6 {
   .is-hidden-mobile {
     display: none;
   }
+}
+
+.url-box {
+  overflow: auto;
+  width: 100%;
+  white-space: nowrap;
+  background: #eeeeee;
+  padding: 2px 10px;
+  border-radius: 4px;
+}
+
+.visited-province-list {
+  padding: 0;
+  padding-left: 20px;
+}
+
+.padding {
+  padding: 20px;
 }
