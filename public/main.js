@@ -215,6 +215,9 @@ function getVisitedProvince() {
 // Convert SVG to PNG
 function share() {
   var visits = getVisitedProvince();
+  var canvas = document.getElementById('canvas');
+  canvg(canvas, document.getElementById('map').outerHTML);
+  var data64 = canvas.toDataURL('image/png');
 
   fetch(site_url + '/api/play', {
     method: 'POST',
@@ -222,6 +225,7 @@ function share() {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
+      image: data64,
       province: visits,
       user_input_at: user_input_at
     })

@@ -22,6 +22,7 @@ var servePublicStatic = serveStatic(__dirname + '/public', {
   'setHeaders': setHeaders
 });
 
+// View template
 var fs = require('fs');
 _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
 var template = {
@@ -41,6 +42,7 @@ var base_template_data = {
   people_count: 99999,
 };
 
+// CSV data
 var province_list = [];
 var province_file = __dirname + '/public/data/provinces-visited.csv';
 var csv_parser = csv_parse({
@@ -54,6 +56,20 @@ var csv_parser = csv_parse({
   province_list = data;
 });
 fs.createReadStream(province_file).pipe(csv_parser);
+
+// Amazon AWS
+const AWS = require('aws-sdk');
+const awsConfig = {};
+awsConfig.region = process.env.AWS_REGION;
+awsConfig.accessKeyId = process.env.AWS_ACCESS_KEY;
+awsConfig.secretAccessKey = process.env.AWS_SECRET;
+AWS.config.update(awsConfig);
+// S3 (http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/frames.html#!http%3A//docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3_20060301.html)
+var s3 = new AWS.S3({
+  params: { Bucket: process.env.AWS_BUCKET }
+});
+var s3_resource_url = 'https://s3-' + process.env.AWS_REGION
+  + '.amazonaws.com/' + process.env.AWS_BUCKET + '/';
 
 function notfound(res) {
   res.writeHead(404);
@@ -155,6 +171,25 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
       });
     }
 
+    function uploadFile(name, buffer, done) {
+      var params = {
+        Key: name,
+        Body: buffer,
+        ACL: 'public-read',
+        ContentEncoding: 'base64',
+        ContentType: 'image/png'
+        // other options supported by putObject, except Body and ContentLength.
+        // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
+      };
+      s3.putObject(params, function(err, data) {
+        if (err) {
+          done(err);
+        } else {
+          done(null, data);
+        }
+      });
+    }
+
     var req_path = url_re.parse(req.url).pathname;
     var current_url = site_url + req_path;
     var thumbnail_url = site_url + '/public/thumbnail.jpg';
@@ -189,9 +224,20 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
           req.connection.remoteAddress ||
           req.socket.remoteAddress ||
           req.connection.socket.remoteAddress;
+
+        var image64 = data.image;
+        delete data.image;
         insertDB(data, function(err, map_id) {
-          res.writeHead(200);
-          res.end(JSON.stringify(JSON.parse('{ "id": "' + map_id + '" }')));
+          var buffer = new Buffer(image64.replace(/^data:image\/\w+;base64,/, ""), 'base64');
+          uploadFile(map_id + '.png', buffer, function(upload_err, upload_result) {
+            if (upload_err) {
+              res.writeHead(500);
+              res.end(upload_err.toString());
+              return;
+            }
+            res.writeHead(200);
+            res.end(JSON.stringify(JSON.parse('{ "id": "' + map_id + '" }')));
+          });
         });
 
         // Request Format
@@ -248,6 +294,7 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
             return _.get(_.find(province_list, ['id', String(id)]), 'provinceTH');
           }));
           title = 'เคยไปมาแล้ว ' + province_names.length + ' จังหวัด ได้แก่ ' + province_names.join(', ');
+          thumbnail_url = s3_resource_url + id + '.png';
           var data = _.merge({}, base_template_data, result, {
             current_url,
             thumbnail_url,
