@@ -1,0 +1,17 @@
+{
+  "name": "thai-province",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "pm2 start ecosystem.config.js && pm2 logs `json name < package.json`",
+    "stop": "pm2 stop `json name < package.json`",
+    "preinstall": "yarn global add json"
+  },
+  "dependencies": {
+    "async": "^2.5.0",
+    "dotenv": "^4.0.0",
+    "lodash": "^4.17.4",
+    "moment": "^2.18.1",
+    "mongodb": "^2.2.29"
+  }
+}
