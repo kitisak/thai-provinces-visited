@@ -1,6 +1,7 @@
 //Width and height of map
 var width = 320;
 var height = 640;
+var user_input_at = Date.now();
 
 // D3 Projection
 var projection = d3.geoAlbers()
@@ -222,7 +223,7 @@ function share() {
     },
     body: JSON.stringify({
       province: visits,
-      user_input_at: Date.now()
+      user_input_at: user_input_at
     })
   })
   .then(function(response) {

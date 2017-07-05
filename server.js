@@ -28,6 +28,10 @@ var template = {
 };
 var base_template_data = {
   site_url: site_url,
+  current_url: '',
+  thumbnail_url: '',
+  title: 'มาอวดจังหวัดที่เคยไปกัน!',
+  description: 'พิมพ์ชื่อจังหวัดที่เคยไป แล้วแสดงเป็นแผนที่ไปอวดเพื่อนได้เลย! เมืองไทยมีที่เที่ยวมากมาย น้ำตก ทะเล ภูเขา เที่ยวไทย ไม่ไปไม่รู้',
   page: '',
   map_id: '',
   province: [],
@@ -136,6 +140,10 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
     }
 
     var req_path = url_re.parse(req.url).pathname;
+    var current_url = site_url + req_path;
+    var thumbnail_url = site_url + '/public/thumbnail.jpg';
+    var title = '';
+    var description = '';
     var route = {
       public: /^\/public(\/.+)$/gi,
       view: /^\/view\/([0-9a-f]+)\/?$/gi,
@@ -201,7 +209,13 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
 
     } else if (req.method === 'GET' && req_path === '/') {
       // @path GET /
-      var data = _.merge({}, base_template_data, { page: 'play' })
+      var data = _.merge({}, base_template_data, {
+        current_url,
+        thumbnail_url,
+        title,
+        description,
+        page: 'play'
+      })
       res.setHeader('content-type', 'text/html');
       res.writeHead(200);
       res.end(template.play(data));
@@ -217,6 +231,10 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
             return;
           }
           var data = _.merge({}, base_template_data, result, {
+            current_url,
+            thumbnail_url,
+            title,
+            description,
             page: 'result',
             map_id: id
           })

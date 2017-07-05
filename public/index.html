@@ -3,25 +3,25 @@
   <title>มาอวดจังหวัดที่เคยไปกัน!</title>
   <base href="{{ site_url }}/">
 	<meta charset="utf-8">
-  <meta name="viewport" content="widtd=device-widtd,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
 
   <!-- for Google -->
-  <meta name="description" content="พิมพ์ชื่อจังหวัดที่เคยไป แล้วแสดงเป็นแผนที่ไปอวดเพื่อนได้เลย! เมืองไทยมีที่เที่ยวมากมาย น้ำตก ทะเล ภูเขา เที่ยวไทย ไม่ไปไม่รู้" />
+  <meta name="description" content="{{ description }}" />
   <meta name="keywords" content="map, visualization, choropleth, thailand, travel, แผนที่, ท่องเที่ยว, เที่ยวไทย, จังหวัด" />
   <meta name="author" content="Boonmee Lab" />
 
   <!-- for Facebook -->
-  <meta property="og:title" content="มาอวดจังหวัดที่เคยไปกัน!" />
+  <meta property="og:title" content="{{ title }}" />
   <meta property="og:type" content="article" />
-  <meta property="og:image" content="{{ site_url }}/public/thumbnail.jpg" />
-  <meta property="og:url" content="{{ site_url }}" />
-  <meta property="og:description" content="พิมพ์ชื่อจังหวัดที่เคยไป แล้วแสดงเป็นแผนที่ไปอวดเพื่อนได้เลย! เมืองไทยมีที่เที่ยวมากมาย น้ำตก ทะเล ภูเขา เที่ยวไทย ไม่ไปไม่รู้" />
+  <meta property="og:image" content="{{ thumbnail_url }}" />
+  <meta property="og:url" content="{{ current_url }}" />
+  <meta property="og:description" content="{{ description }}" />
 
   <!-- for Twitter -->
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="มาอวดจังหวัดที่เคยไปกัน!" />
-  <meta name="twitter:description" content="พิมพ์ชื่อจังหวัดที่เคยไป แล้วแสดงเป็นแผนที่ไปอวดเพื่อนได้เลย! เมืองไทยมีที่เที่ยวมากมาย น้ำตก ทะเล ภูเขา เที่ยวไทย ไม่ไปไม่รู้" />
-  <meta name="twitter:image" content="{{ site_url }}/public/thumbnail.jpg" />
+  <meta name="twitter:title" content="{{ title }}" />
+  <meta name="twitter:description" content="{{ description }}" />
+  <meta name="twitter:image" content="{{ thumbnail_url }}" />
 
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.css">
 	<link href="public/main.css" rel="stylesheet">
@@ -92,7 +92,7 @@
 
         <div id="result-content" style="{{ page === 'result' ? '' : 'display: none;' }}">
           <h2>เคยไปมาแล้ว {{ province.length }} จังหวัด</h2>
-          <p>ได้แก่</p>
+          <p>ได้แก่จังหวัด</p>
           <ul id="visited-province-list" class="two-column"></ul>
 
           <p>โดยเฉลี่ยคนไปมาแล้ว {{ avg_province }} จังหวัด จากข้อมูลทั้งหมด {{ people_count }} คน</p>
