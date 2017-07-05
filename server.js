@@ -11,7 +11,7 @@ var moment = require('moment');
 var serveStatic = require('serve-static')
 var port = process.env.PORT || '8080';
 var url = process.env.MONGODB || 'mongodb://localhost:27017/thaipv';
-var site_url = process.env.SITE_URL || `http://localhost:${port}`;
+var site_url = (process.env.SITE_URL || `http://localhost:${port}`).replace(/\/$/, '');
 
 // Serve up public folder
 function setHeaders (res, path) {
