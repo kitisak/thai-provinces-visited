@@ -202,6 +202,7 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
     } else if (req.method === 'GET' && req_path === '/') {
       // @path GET /
       var data = _.merge({}, base_template_data, { page: 'play' })
+      res.setHeader('content-type', 'text/html');
       res.writeHead(200);
       res.end(template.play(data));
 
@@ -219,6 +220,7 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
             page: 'result',
             map_id: id
           })
+          res.setHeader('content-type', 'text/html');
           res.writeHead(200);
           res.end(template.play(data));
         });
