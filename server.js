@@ -40,6 +40,8 @@ var base_template_data = {
   province_name: [],
   avg_province: 0,
   people_count: 99999,
+  GA_ID: process.env.GA_ID,
+  FB_APP_ID: process.env.FB_APP_ID
 };
 
 // CSV data
@@ -83,7 +85,7 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
       assert.ok(Array.isArray(data.province));
       assert.notEqual(data.province.length, 0);
       assert.equal(typeof data.t, 'number');
-      data = _.pick(data, ['ip', 'province', 't']);
+      data = _.pick(data, ['ip', 'province', 'ua', 't']);
       // convert to number and sort ascendingly
       data.province = _.uniq(data.province).map(id => Number(id)).sort((a, b) => b < a);
       data.created_at = new Date();
@@ -217,6 +219,7 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
       });
       req.on('end', function() {
         let data = JSON.parse(body);
+        data.ua = req.headers['user-agent'] || '';
         data.ip = req.headers['x-forwarded-for'] ||
           req.connection.remoteAddress ||
           req.socket.remoteAddress ||
