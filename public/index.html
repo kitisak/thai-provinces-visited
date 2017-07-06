@@ -63,7 +63,7 @@
         <a href="https://data.boonmeelab.com"><img src="public/logo_boonmeelab_small.png" /></a>
       </div>
       <div class="menu-item nav-item">
-        <a href="https://www.boonmeelab.com" target="_blank">Work</a>
+        <a href="http://www.boonmeelab.com" target="_blank">Work</a>
       </div>
       <div class="menu-item nav-item">
         <a href="https://data.boonmeelab.com" target="_blank">Data</a>
@@ -95,15 +95,19 @@
           </div>
 
           <div class="spacing"></div>
-          <button id="share-btn" class="button" disabled onclick="share(); return false;">แชร์แผนที่ของคุณบน Facebook</button>
+          <button id="share-btn" class="button" disabled onclick="share(); return false;">สรุปการเดินทางของคุณ</button>
         </div>
 
         <div id="result-content" style="{{ page === 'result' ? '' : 'display: none;' }}">
+          <p id="mission-complete"></p>
           <h2>เคยไปมาแล้ว {{ province.length }} จังหวัด</h2>
           <p>ได้แก่จังหวัด</p>
-          <ul id="visited-province-list" class="two-column"></ul>
+          <ul id="visited-province-list" class="province-list"></ul>
 
           <p>โดยเฉลี่ยคนไปมาแล้ว {{ avg_province }} จังหวัด จากข้อมูลทั้งหมด {{ people_count }} คน</p>
+
+          <p id="to-visit-province-title">ยังเหลืออีก {{ 77 - province.length }} จังหวัด</p>
+          <ul id="to-visit-province-list" class="province-list"></ul>
 
           <div class="spacing"></div>
           <div>Copy Link:</div>
@@ -113,7 +117,11 @@
 
           <div class="spacing"></div>
           <div>
-            <div class="fb-share-button" data-href="{{ current_url }}" data-layout="button" data-size="large" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse">Share</a></div>
+            <!--<div class="fb-share-button" data-href="{{ current_url }}" data-layout="button" data-size="large" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse">Share</a></div>-->
+            <button id="share-fb-btn" class="button" onclick="share_facebook(); return false;">
+              <i class="icon icon-facebook-squared"></i>
+              <span>แชร์แผนที่บน Facebook</span>
+            </button>
           </div>
           <div class="spacing"></div>
           <div>
@@ -132,13 +140,8 @@
           <div class="spacing"></div>
           <h6>สนับสนุนโดย</h6>
           <div class="banner">
-            <a href="https://www.bluebasket.market/mibochestnut/product" target="_blank">
-              <img src="https://www.bluebasket.market/api/image/595b1d14e875e61aa9afe52f" />
-            </a>
-          </div>
-          <div class="banner">
-            <a href="https://www.bluebasket.market/nanafruit/product" target="_blank">
-              <img src="https://www.bluebasket.market/api/image/595b1d30e875e61aa9afe530" />
+            <a href="https://www.bluebasket.market" target="_blank">
+              <img src="public/bb-sponsor.jpg" />
             </a>
           </div>
         </div>
@@ -158,13 +161,8 @@
     <div class="spacing"></div>
     <h6>สนับสนุนโดย</h6>
     <div class="banner is-fullwidth">
-      <a href="https://www.bluebasket.market/mibochestnut/product" target="_blank">
-        <img src="https://www.bluebasket.market/api/image/595b1d14e875e61aa9afe52f" />
-      </a>
-    </div>
-    <div class="banner is-fullwidth">
-      <a href="https://www.bluebasket.market/nanafruit/product" target="_blank">
-        <img src="https://www.bluebasket.market/api/image/595b1d30e875e61aa9afe530" />
+      <a href="https://www.bluebasket.market" target="_blank">
+        <img src="public/bb-sponsor.jpg" />
       </a>
     </div>
   </div>

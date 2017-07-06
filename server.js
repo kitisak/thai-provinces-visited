@@ -290,16 +290,29 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
             notfound(res);
             return;
           }
+          var all_province_ids = _.shuffle(_.range(1, 78));
+          var tovisit_province = _.difference(all_province_ids, result.province);
           var province_names = _.compact(result.province.map(function(id) {
             return _.get(_.find(province_list, ['id', String(id)]), 'provinceTH');
           }));
-          title = 'เคยไปมาแล้ว ' + province_names.length + ' จังหวัด ได้แก่ ' + province_names.join(', ');
+          var tovisit_province_names = _.compact(tovisit_province.map(function(id) {
+            return _.get(_.find(province_list, ['id', String(id)]), 'provinceTH');
+          }));
+          var province_names = _.compact(result.province.map(function(id) {
+            return _.get(_.find(province_list, ['id', String(id)]), 'provinceTH');
+          }));
+          title = 'เคยไปมาแล้ว ' + province_names.length + ' จังหวัด: ' + province_names.join(', ');
+          if (tovisit_province_names.length > 0) {
+            description = 'ขอแนะนำที่ถัดไป: ' + tovisit_province_names.join(', ');
+          } else {
+            description = 'คุณคือผู้พิชิต 77 จังหวัดไทย ปรบมือ! 👏👏👏'
+          }
           thumbnail_url = s3_resource_url + id + '.png';
           var data = _.merge({}, base_template_data, result, {
             current_url,
             thumbnail_url,
             title,
-            description: title,
+            description,
             page: 'result',
             map_id: id
           })

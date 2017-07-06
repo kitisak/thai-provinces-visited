@@ -110,15 +110,24 @@ if (typeof visited_provinces === 'undefined') {
 }
 
 d3.csv("public/data/provinces-visited.csv", function(data) {
-  var visited_html = '';
+  var visited_html = [];
+  var tovisit_html = [];
   provinces = data;
   provinces.forEach(function(d, i) {
     d.visited = visited_provinces[d.id - 1] === '1';
     if (d.visited) {
-      visited_html += '<li>' + d.provinceTH + '</li>';
+      visited_html.push('<li>' + (visited_html.length + 1) + '. <span class="province">'+ d.provinceTH + '</span></li>');
+    } else {
+      tovisit_html.push('<li>' + (tovisit_html.length + 1) + '. <span class="province">'+ d.provinceTH + '</span></li>');
     }
   });
-  document.getElementById('visited-province-list').innerHTML = visited_html;
+  document.getElementById('visited-province-list').innerHTML = visited_html.join('\n');
+  if (tovisit_html.length > 0) {
+    document.getElementById('to-visit-province-list').innerHTML = tovisit_html.join('\n');
+  } else {
+    document.getElementById('to-visit-province-title').innerHTML = '';
+    document.getElementById('mission-complete').innerHTML = 'คุณคือสุดยอดคนไทย!<br>👏👏👏';
+  }
 
   // dropdown
   var $provinces = $("#provinces");
@@ -246,18 +255,23 @@ function share() {
       params
     );
 
-    FB.ui({
-      method: 'share',
-      href: site_url + '/view/' + map_id
-    }, function(response) {
-      // no-op
-    });
-
     setTimeout(function() {
       location.href = site_url + '/view/' + map_id;
-    }, 2000);
+    }, 500);
   })
   .catch(function(err) {
     console.error('parsing failed', err);
+  });
+}
+
+function share_facebook() {
+  // logging
+  FB.AppEvents.logEvent("Click Share Button");
+  FB.ui({
+    method: 'share',
+    href: location.href,
+    mobile_iframe: true,
+  }, function(response) {
+    // no-op
   });
 }
