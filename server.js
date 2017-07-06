@@ -297,13 +297,13 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
           }));
           var tovisit_province_names = _.compact(tovisit_province.map(function(id) {
             return _.get(_.find(province_list, ['id', String(id)]), 'provinceTH');
-          }));
+          })).slice(0, 10);
           var province_names = _.compact(result.province.map(function(id) {
             return _.get(_.find(province_list, ['id', String(id)]), 'provinceTH');
           }));
           title = 'เคยไปมาแล้ว ' + province_names.length + ' จังหวัด: ' + province_names.join(', ');
           if (tovisit_province_names.length > 0) {
-            description = 'ขอแนะนำที่ถัดไป: ' + tovisit_province_names.join(', ');
+            description = 'ขอแนะนำ! ' + tovisit_province_names.length + ' จังหวัดที่ควรไปโดนให้ไว: ' + tovisit_province_names.join(', ');
           } else {
             description = 'คุณคือผู้พิชิต 77 จังหวัดไทย ปรบมือ! 👏👏👏'
           }
