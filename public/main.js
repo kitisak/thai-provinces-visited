@@ -223,10 +223,19 @@ function getVisitedProvince() {
 
 // Convert SVG to PNG
 function share() {
-  var visits = getVisitedProvince();
-  var canvas = document.getElementById('canvas');
-  canvg(canvas, document.getElementById('map').outerHTML);
-  var data64 = canvas.toDataURL('image/png');
+  try {
+    var visits = getVisitedProvince();
+    var canvas = document.getElementById('canvas');
+    canvg(canvas, document.getElementById('map').outerHTML);
+    var data64 = canvas.toDataURL('image/png');
+  } catch (err) {
+    // logging
+    FB.AppEvents.logEvent("Convert SVG to PNG Error", null, {
+      message: err.toString()
+    });
+    alert('เสียใจจัง เบราเซอร์คุณร่วมสนุกไม่ได้ ลองเปลี่ยนเครื่องแล้วลองใหม่นะ 😢')
+    return;
+  }
 
   fetch(site_url + '/api/play', {
     method: 'POST',
