@@ -140,8 +140,8 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
       var query = { _id: new ObjectId(id) };
       async.parallel({
         objectById: async.apply(getObjectById, query),
-        peopleCount: getPeopleCount,
-        sumProvince: getSumProvince
+        // peopleCount: getPeopleCount,
+        // sumProvince: getSumProvince
       }, function (error, results) {
         if (error) {
           done(error);
@@ -150,8 +150,8 @@ var mongoClient = MongoClient.connect(url, function(err, db) {
         let json = {
           id: _.get(results, 'objectById.0._id'),
           province: _.get(results, 'objectById.0.province'),
-          people_count: _.get(results, 'peopleCount'),
-          avg_province: Math.round(_.get(results, 'sumProvince.0.sum_province')/_.get(results, 'peopleCount'))
+          // people_count: _.get(results, 'peopleCount'),
+          // avg_province: Math.round(_.get(results, 'sumProvince.0.sum_province')/_.get(results, 'peopleCount'))
         };
         done(null, json);
         // return

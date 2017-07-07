@@ -48,14 +48,22 @@ template,
   display: none;
 }
 
-a {
+a,
+a:visited {
+  color: #777777;
   background-color: transparent;
   -webkit-text-decoration-skip: objects;
 }
 
 a:active,
 a:hover {
+  color: #eb307c;
   outline-width: 0;
+}
+
+a:active .icon,
+a:hover .icon {
+  color: #777777;
 }
 
 abbr[title] {
@@ -268,11 +276,18 @@ h2 {
   margin-top: 80px;
 }
 
+h5 {
+  font-size: 12px;
+  font-weight: normal;
+  color: #777777;
+  margin: 0 0 5px;
+}
+
 h6 {
   font-size: 10px;
   font-weight: normal;
   color: #777777;
-  margin: 0;
+  margin: 0 0 5px;
   /*margin-top: 80px;*/
 }
 
@@ -300,6 +315,14 @@ h6 {
 #credit {
 	text-align: center;
 }
+.credit-item {
+  display: inline-block;
+  padding: 0 5px;
+}
+.credit-item .icon {
+  font-size: 16px;
+}
+
 .logo {
   position: relative;
   display: inline-block;
@@ -378,7 +401,8 @@ h6 {
 }
 
 
-.button {
+.button,
+.button:visited {
   -moz-appearance: none;
   -webkit-appearance: none;
   -ms-flex-align: center;
@@ -429,6 +453,15 @@ h6 {
 .button:disabled,
 .button[disabled] {
   opacity: 0.6;
+}
+
+.button.is-block {
+  display: block;
+  width: 100%;
+}
+
+.button .icon {
+  font-size: 16px;
 }
 
 
@@ -494,7 +527,7 @@ h6 {
 }
 
 .banner {
-  width: 240px;
+  /*width: 240px;*/
 }
 .banner img {
   width: 100%;
@@ -546,4 +579,19 @@ h6 {
 }
 #mission-complete + h2 {
   margin-top: 10px;
+}
+
+.small {
+  font-size: 10px;
+}
+
+#mission-complete-canvas {
+	cursor: crosshair;
+	display: block;
+
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  pointer-events: none;
 }

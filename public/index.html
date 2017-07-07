@@ -95,16 +95,19 @@
           </div>
 
           <div class="spacing"></div>
-          <button id="share-btn" class="button" disabled onclick="share(); return false;">สรุปการเดินทางของคุณ</button>
+          <button id="share-btn" class="button is-block" disabled onclick="share(); return false;">สรุปการเดินทางของคุณ</button>
+
         </div>
 
         <div id="result-content" style="{{ page === 'result' ? '' : 'display: none;' }}">
+
           <p id="mission-complete"></p>
+
           <h2>เคยไปมาแล้ว {{ province.length }} จังหวัด</h2>
           <p>ได้แก่จังหวัด</p>
           <ul id="visited-province-list" class="province-list"></ul>
 
-          <p>โดยเฉลี่ยคนไปมาแล้ว {{ avg_province }} จังหวัด จากข้อมูลทั้งหมด {{ people_count }} คน</p>
+          <!--<p>โดยเฉลี่ยคนไปมาแล้ว {{ avg_province }} จังหวัด จากข้อมูลทั้งหมด {{ people_count }} คน</p>-->
 
           <p id="to-visit-province-title">ยังเหลืออีก {{ 77 - province.length }} จังหวัด</p>
           <ul id="to-visit-province-list" class="province-list"></ul>
@@ -118,14 +121,14 @@
           <div class="spacing"></div>
           <div>
             <!--<div class="fb-share-button" data-href="{{ current_url }}" data-layout="button" data-size="large" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse">Share</a></div>-->
-            <button id="share-fb-btn" class="button" onclick="share_facebook(); return false;">
+            <button id="share-fb-btn" class="button is-block" onclick="share_facebook(); return false;">
               <i class="icon icon-facebook-squared"></i>
               <span>แชร์แผนที่บน Facebook</span>
             </button>
           </div>
           <div class="spacing"></div>
           <div>
-            <a href="" class="button">สร้างแผนที่ของคุณเอง</a>
+            <a href="" class="button is-block">สร้างแผนที่ของคุณเอง</a>
           </div>
 
           <div class="spacing"></div>
@@ -137,6 +140,18 @@
 
         <div class="is-hidden-mobile">
           <div class="spacing"></div>
+          <div class="spacing"></div>
+          <h6>การใช้งานข้อมูลผู้ใช้</h6>
+          <div class="small">
+            <p>สำหรับคนที่กังวลเรื่องการเก็บข้อมูล เราเก็บแต่พองาม ดังนี้</p>
+            <ul>
+              <li>IP Address</li>
+              <li>เบราเซอร์และ OS</li>
+              <li>ระยะเวลาที่ใช้เล่นแอพ</li>
+              <li>เวลาที่กดส่งข้อมูล</li>
+              <li>ไม่มีการล้วงเอาจาก Facebook ใดๆ (คุณจะเพศไหนก็ได้ มีเพื่อนเป็นใครก็ได้)</li>
+            </ul>
+          </div>
           <div class="spacing"></div>
           <h6>สนับสนุนโดย</h6>
           <div class="banner">
@@ -153,11 +168,30 @@
     </div>
   </div>
 	<div id="credit">
-		สร้างสรรค์โดย
-    <div class="logo boonmeelab"><a href="https://www.facebook.com/BoonmeeLab/"><span></span></a></div>
+    <div class="credit-item">
+      <span>สร้างสรรค์โดย</span>
+      <div class="logo boonmeelab"><a href="https://www.facebook.com/BoonmeeLab/"><span></span></a></div>
+    </div>
+    <div class="credit-item">
+      <a href="https://github.com/rapee/thai-provinces-visited" target="_blank">
+        <i class="icon icon-github-circled"></i>
+      </a>
+    </div>
   </div>
 
   <div class="container padding is-hidden-desktop">
+    <div class="spacing"></div>
+    <h5>การใช้งานข้อมูลผู้ใช้</h5>
+    <div class="small">
+      <p>สำหรับคนที่กังวลเรื่องการเก็บข้อมูล เราเก็บแต่พองาม ดังนี้</p>
+      <ul>
+        <li>IP Address</li>
+        <li>เบราเซอร์ และ OS</li>
+        <li>ระยะเวลาที่ใช้เล่นแอพ</li>
+        <li>เวลาที่กดส่งข้อมูล</li>
+        <li>ไม่มีการล้วงเอาจาก Facebook ใดๆ (คุณจะเพศไหนอายุเท่าไหร่ มีเพื่อนเป็นใครก็ได้ เราไม่อยากรู้)</li>
+      </ul>
+    </div>
     <div class="spacing"></div>
     <h6>สนับสนุนโดย</h6>
     <div class="banner is-fullwidth">
@@ -168,6 +202,7 @@
   </div>
 
   <canvas id="canvas" width="320px" height="640px"></canvas>
+  <canvas id="mission-complete-canvas"></canvas>
 
 	<!--  Adapted from https://gist.github.com/michellechandra/0b2ce4923dc9b5809922 -->
 	<script src="https://d3js.org/d3.v4.min.js"></script>
